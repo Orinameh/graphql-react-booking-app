@@ -7,11 +7,15 @@ const mongoose = require('mongoose');
 const graphQLSchema = require('./graphql/schema');
 const graphQLResolvers = require('./graphql/resolvers');
 
+const isAuth = require('./middleware/auth');
+
 
 const port = 3000;
 const app = express();
 
 app.use(bodyParser.json());
+
+app.use(isAuth);
 
 // const events = []
 

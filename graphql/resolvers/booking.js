@@ -10,7 +10,10 @@ const {
 
 module.exports = {
 
-	bookings: async () => {
+	bookings: async (args, req) => {
+		if(!req.isAuth) {
+			throw new Error('user unauthenticated!')
+		}
 		try {
 			const bookings = await Booking.find();
 			return bookings.map(booking => {
@@ -21,62 +24,10 @@ module.exports = {
 		}
 	},
 
-	createUser: async args => {
-		// return User.findOne({
-		// 		email: args.userInput.email
-		// 	})
-		// 	.then(user => {
-		// 		console.log(user)
-		// 		if (user) {
-		// 			throw new Error('User already exists')
-		// 		}
-		// 		return bcrypt.hash(args.userInput.password, 12)
-		// 	})
-		// 	.then(hashedPassword => {
-		// 		const user = new User({
-		// 			email: args.userInput.email,
-		// 			password: hashedPassword
-		// 		});
-		// 		return user.save();
-		// 	})
-		// 	.then(res => {
-		// 		return {
-		// 			...res._doc,
-		// 			password: null
-		// 		}
-		// 	})
-		// 	.catch(err => {
-		// 		console.log(err)
-		// 		throw err
-		// 	})
-
-		try {
-			const existingUser = await User.findOne({
-				email: args.userInput.email
-			})
-
-			if (existingUser) {
-				throw new Error('User already exists')
-			}
-			const hashedPassword = await bcrypt.hash(args.userInput.password, 12)
-
-			const user = new User({
-				email: args.userInput.email,
-				password: hashedPassword
-			});
-			const res = await user.save();
-
-			return {
-				...res._doc,
-				password: null
-			}
-		} catch (error) {
-			throw error
+	bookEvent: async (args, req) => {
+		if(!req.isAuth) {
+			throw new Error('user unauthenticated!')
 		}
-
-	},
-
-	bookEvent: async args => {
 		const fetchedEvent = await Event.findOne({
 			_id: args.eventId
 		})
@@ -89,7 +40,10 @@ module.exports = {
 		return transformBooking(result)
 	},
 
-	cancelBooking: async args => {
+	cancelBooking: async (args, req) => {
+		if(!req.isAuth) {
+			throw new Error('user unauthenticated!')
+		}
 		try {
 			const booking = await Booking.findById(args.bookingId).populate('event');
 			const event = transformEvent(booking.event)
